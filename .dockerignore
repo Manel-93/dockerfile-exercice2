@@ -1,0 +1,21 @@
+# Approche "liste blanche" : tout est exclu, puis seuls les fichiers
+# nécessaires au build sont réautorisés.
+*
+
+!package.json
+!package-lock.json
+!vite.config.js
+!index.html
+!main.js
+!style.css
+!questions_defaut.js
+!public/
+!nginx/default.conf
+
+# Même réautorisés, ces éléments ne doivent jamais entrer dans le contexte
+**/.git
+**/node_modules
+**/dist
+**/.env*
+**/*.pem
+**/*.key

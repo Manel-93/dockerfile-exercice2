@@ -1,0 +1,27 @@
+services:
+  quiz:
+    image: quiz-docker:secure
+    build: .
+    container_name: quiz-secure
+    ports:
+      - "${QUIZ_PORT:-8090}:8080"   # port hôte modifiable (8080 souvent déjà pris)
+
+    # --- Privilèges ---
+    user: "101:101"                 # jamais root
+    read_only: true                 # système de fichiers racine en lecture seule
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m   # seul dossier inscriptible (PID et cache de nginx)
+    cap_drop:
+      - ALL                         # aucune capability Linux (le port 8080 n'en demande pas)
+    security_opt:
+      - no-new-privileges:true      # pas d'élévation via setuid/setgid
+
+    # --- Ressources ---
+    mem_limit: 64m
+    memswap_limit: 64m              # pas de swap supplémentaire
+    cpus: 0.5
+    pids_limit: 50                  # protège contre une fork bomb
+
+    restart: unless-stopped
+    # Le socket Docker (/var/run/docker.sock) n'est volontairement PAS monté :
+    # y accéder équivaut à être root sur l'hôte.
